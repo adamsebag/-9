@@ -1,0 +1,1220 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>אדם סבג - מערכת חשבוניות</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 18px;
+  background: #eef1f5;
+  color: #222;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  color: #17365d;
+}
+
+.panel {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #00000012;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 13px 0 6px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccd2da;
+  border-radius: 7px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  background: white;
+}
+
+textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+button {
+  border: 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  margin: 5px 2px;
+  background: #17365d;
+  color: white;
+}
+
+button:hover { opacity: .88; }
+
+.green { background: #16834a; }
+.whatsapp { background: #128c4a; }
+.orange { background: #d97706; }
+.red { background: #c0392b; }
+.gray { background: #596579; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 15px;
+}
+
+.signature-area {
+  border: 2px dashed #9aa5b1;
+  border-radius: 8px;
+  background: white;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 160px;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+#invoice {
+  background: white;
+  color: #222;
+  padding: 38px;
+  width: 100%;
+  min-height: 700px;
+  border: 1px solid #ddd;
+  direction: rtl;
+  font-family: Arial, sans-serif;
+}
+
+.invoice-header {
+  text-align: center;
+  border-bottom: 3px solid #17365d;
+  padding-bottom: 22px;
+  margin-bottom: 28px;
+}
+
+.invoice-header h2 {
+  color: #17365d;
+  font-size: 34px;
+  margin: 0 0 15px;
+}
+
+.owner {
+  font-size: 23px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.business-number {
+  color: #555;
+  font-size: 16px;
+}
+
+.invoice-number-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  background: #f0f4f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 16px;
+}
+
+.invoice-section {
+  border: 1px solid #e0e5eb;
+  border-radius: 9px;
+  padding: 18px;
+  margin: 18px 0;
+  break-inside: avoid;
+}
+
+.invoice-section h3 {
+  color: #17365d;
+  margin: 0 0 13px;
+  font-size: 18px;
+}
+
+.recipient-name {
+  font-size: 21px;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.invoice-details {
+  font-size: 17px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-height: 35px;
+}
+
+.total-box {
+  margin-top: 35px;
+  padding: 24px;
+  text-align: center;
+  background: #f0f4f9;
+  border: 2px solid #17365d;
+  border-radius: 10px;
+  break-inside: avoid;
+}
+
+.total-label {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.total-amount {
+  font-size: 34px;
+  font-weight: bold;
+  color: #17365d;
+  direction: ltr;
+}
+
+.signature-preview {
+  margin-top: 45px;
+  text-align: right;
+  break-inside: avoid;
+}
+
+.signature-preview img {
+  max-width: 250px;
+  max-height: 100px;
+  display: block;
+  object-fit: contain;
+  border-bottom: 1px solid #333;
+  margin-top: 12px;
+}
+
+.footer-invoice {
+  text-align: center;
+  color: #777;
+  font-size: 13px;
+  margin-top: 55px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+}
+
+.history-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.small-button {
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.status {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #eef4fa;
+  color: #17365d;
+  display: none;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+@media(max-width:600px) {
+  body { padding: 8px; }
+  .panel { padding: 13px; }
+  #invoice { padding: 20px; }
+  .invoice-header h2 { font-size: 27px; }
+  .total-amount { font-size: 29px; }
+}
+
+@media print {
+  body { background: white; padding: 0; }
+  .panel, h1, .no-print { display: none !important; }
+  #invoice { border: none; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>אדם סבג - מערכת חשבוניות</h1>
+
+<!-- FORMULAIRE -->
+
+<div class="panel">
+
+<h2>פרטי החשבונית</h2>
+
+<label>מספר חשבונית</label>
+<input id="invoiceNumber" type="text">
+
+<label>תאריך</label>
+<input id="invoiceDate" type="date">
+
+<label>לכבוד</label>
+<input id="recipient" type="text" placeholder="שם הלקוח">
+
+<label>פרטים</label>
+<textarea id="details" placeholder="פרטי השירות"></textarea>
+
+<label>סכום לתשלום (₪)</label>
+<input id="amount" type="number" min="0" step="0.01" placeholder="300">
+
+<label>חתימה דיגיטלית</label>
+
+<div class="signature-area">
+<canvas id="signature"></canvas>
+</div>
+
+<div class="actions">
+
+<button class="gray" onclick="clearSignature()">
+נקה חתימה
+</button>
+
+<button class="green" onclick="saveInvoice()">
+שמור חשבונית
+</button>
+
+<button onclick="preparePreview()">
+הצג חשבונית
+</button>
+
+</div>
+
+</div>
+
+<!-- FORMAT PDF -->
+
+<div class="panel">
+
+<h2>הגדרות PDF</h2>
+
+<label>בחר גודל דף</label>
+
+<select id="pdfFormat">
+<option value="a3">A3 - גדול</option>
+<option value="a4" selected>A4 - רגיל</option>
+<option value="a5">A5 - קטן</option>
+<option value="letter">Letter</option>
+<option value="legal">Legal</option>
+</select>
+
+<label>כיוון הדף</label>
+
+<select id="pdfOrientation">
+<option value="portrait">אנכי - Portrait</option>
+<option value="landscape">אופקי - Landscape</option>
+</select>
+
+<p style="color:#666;font-size:13px">
+הפורמט והכיוון שתבחר יחולו על קובץ ה-PDF שייווצר.
+</p>
+
+</div>
+
+<!-- PREVIEW -->
+
+<div class="panel">
+
+<h2>תצוגה מקדימה של החשבונית</h2>
+
+<div id="invoice">
+
+<div class="invoice-header">
+
+<h2>חשבונית</h2>
+
+<div class="owner">אדם סבג</div>
+
+<div class="business-number">
+עוסק פטור מספר 324697150
+</div>
+
+</div>
+
+<div class="invoice-number-box">
+
+<div>
+<strong>מספר חשבונית:</strong>
+<span id="previewNumber"></span>
+</div>
+
+<div>
+<strong>תאריך:</strong>
+<span id="previewDate"></span>
+</div>
+
+</div>
+
+<div class="invoice-section">
+
+<h3>לכבוד</h3>
+
+<div class="recipient-name" id="previewRecipient"></div>
+
+</div>
+
+<div class="invoice-section">
+
+<h3>פרטים</h3>
+
+<div class="invoice-details" id="previewDetails"></div>
+
+</div>
+
+<div class="total-box">
+
+<div class="total-label">סה"כ לתשלום</div>
+
+<div class="total-amount">
+<span id="previewAmount">0</span> ₪
+</div>
+
+</div>
+
+<div class="signature-preview">
+
+<strong>חתימה:</strong>
+
+<img id="previewSignature" alt="חתימה">
+
+</div>
+
+<div class="footer-invoice">
+תודה רבה על השירות והאמון
+</div>
+
+</div>
+
+<!-- BUTTONS -->
+
+<div class="actions no-print">
+
+<button class="green" onclick="downloadPDF()">
+הורד חשבונית PDF
+</button>
+
+<button class="whatsapp" onclick="shareWhatsApp()">
+שתף חשבונית ב-WhatsApp
+</button>
+
+<button class="orange" onclick="shareEmail()">
+שלח בדואר אלקטרוני
+</button>
+
+<button class="gray" onclick="window.print()">
+הדפס חשבונית
+</button>
+
+</div>
+
+<div id="shareStatus" class="status no-print"></div>
+
+</div>
+
+<!-- HISTORY -->
+
+<div class="panel">
+
+<h2>היסטוריית חשבוניות</h2>
+
+<div id="history"></div>
+
+</div>
+
+</div>
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let signatureData = "";
+let drawing = false;
+let lastX = 0;
+let lastY = 0;
+
+const canvas = $("signature");
+const ctx = canvas.getContext("2d");
+
+// SIGNATURE
+
+function resizeCanvas() {
+
+  const old = signatureData;
+  const rect = canvas.getBoundingClientRect();
+  const ratio = window.devicePixelRatio || 1;
+
+  canvas.width = Math.max(1, Math.round(rect.width * ratio));
+  canvas.height = Math.round(160 * ratio);
+
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "#111";
+
+  if (old) {
+    const img = new Image();
+
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, rect.width, 160);
+    };
+
+    img.src = old;
+  }
+}
+
+function getPosition(e) {
+
+  const rect = canvas.getBoundingClientRect();
+
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
+}
+
+canvas.addEventListener("pointerdown", e => {
+
+  e.preventDefault();
+  canvas.setPointerCapture(e.pointerId);
+
+  drawing = true;
+
+  const p = getPosition(e);
+
+  lastX = p.x;
+  lastY = p.y;
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+
+});
+
+canvas.addEventListener("pointermove", e => {
+
+  if (!drawing) return;
+
+  e.preventDefault();
+
+  const p = getPosition(e);
+
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+
+  lastX = p.x;
+  lastY = p.y;
+
+});
+
+function stopDrawing() {
+
+  if (!drawing) return;
+
+  drawing = false;
+
+  signatureData = canvas.toDataURL("image/png");
+
+}
+
+canvas.addEventListener("pointerup", stopDrawing);
+canvas.addEventListener("pointercancel", stopDrawing);
+
+function clearSignature() {
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  signatureData = "";
+
+}
+
+// DATA
+
+function getData() {
+
+  return {
+
+    number: $("invoiceNumber").value.trim(),
+
+    date: $("invoiceDate").value,
+
+    recipient: $("recipient").value.trim(),
+
+    details: $("details").value.trim(),
+
+    amount: $("amount").value,
+
+    signature: signatureData
+
+  };
+
+}
+
+function formatDate(date) {
+
+  if (!date) return "";
+
+  const parts = date.split("-");
+
+  return parts.length === 3
+    ? parts[2] + "/" + parts[1] + "/" + parts[0]
+    : date;
+
+}
+
+function formatAmount(amount) {
+
+  if (amount === "" || amount === null) return "0";
+
+  return Number(amount).toLocaleString("he-IL", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+
+}
+
+// PREVIEW
+
+function preparePreview() {
+
+  const d = getData();
+
+  $("previewNumber").textContent = d.number;
+
+  $("previewDate").textContent = formatDate(d.date);
+
+  $("previewRecipient").textContent = d.recipient;
+
+  $("previewDetails").textContent = d.details;
+
+  $("previewAmount").textContent = formatAmount(d.amount);
+
+  $("previewSignature").src = d.signature || "";
+
+  return true;
+
+}
+
+// LOAD SIGNATURE
+
+function loadSignature(data) {
+
+  clearSignature();
+
+  if (!data) return Promise.resolve();
+
+  return new Promise(resolve => {
+
+    const img = new Image();
+
+    img.onload = () => {
+
+      const rect = canvas.getBoundingClientRect();
+
+      ctx.drawImage(img, 0, 0, rect.width, 160);
+
+      signatureData = canvas.toDataURL("image/png");
+
+      resolve();
+
+    };
+
+    img.onerror = resolve;
+
+    img.src = data;
+
+  });
+
+}
+
+// STORAGE
+
+function getInvoices() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem("adamInvoices") || "[]"
+    );
+
+  } catch(e) {
+
+    return [];
+
+  }
+
+}
+
+// SAVE
+
+function saveInvoice() {
+
+  const d = getData();
+
+  if (
+    !d.number ||
+    !d.recipient ||
+    !d.amount ||
+    Number(d.amount) <= 0
+  ) {
+
+    alert("נא למלא מספר חשבונית, לכבוד וסכום תקין");
+
+    return;
+
+  }
+
+  if (!d.signature) {
+
+    alert("נא לחתום לפני שמירת החשבונית");
+
+    return;
+
+  }
+
+  const invoices = getInvoices();
+
+  const index = invoices.findIndex(
+    x => x.number === d.number
+  );
+
+  if (index >= 0) {
+
+    invoices[index] = d;
+
+  } else {
+
+    invoices.push(d);
+
+  }
+
+  localStorage.setItem(
+    "adamInvoices",
+    JSON.stringify(invoices)
+  );
+
+  renderHistory();
+
+  preparePreview();
+
+  alert("החשבונית נשמרה בהצלחה");
+
+}
+
+// HISTORY
+
+function renderHistory() {
+
+  const area = $("history");
+
+  area.innerHTML = "";
+
+  const invoices = getInvoices();
+
+  if (!invoices.length) {
+
+    area.textContent = "אין חשבוניות שמורות";
+
+    return;
+
+  }
+
+  invoices.slice().reverse().forEach(d => {
+
+    const item = document.createElement("div");
+
+    item.className = "history-item";
+
+    const info = document.createElement("span");
+
+    info.textContent =
+      "חשבונית " + d.number +
+      " · " + d.recipient +
+      " · " + d.amount + " ₪";
+
+    const open = document.createElement("button");
+
+    open.className = "small-button";
+
+    open.textContent = "פתח";
+
+    open.onclick = async () => {
+
+      $("invoiceNumber").value = d.number || "";
+
+      $("invoiceDate").value = d.date || "";
+
+      $("recipient").value = d.recipient || "";
+
+      $("details").value = d.details || "";
+
+      $("amount").value = d.amount || "";
+
+      await loadSignature(d.signature);
+
+      preparePreview();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    };
+
+    const remove = document.createElement("button");
+
+    remove.className = "small-button red";
+
+    remove.textContent = "מחק";
+
+    remove.onclick = () => {
+
+      if (!confirm("למחוק את החשבונית?")) return;
+
+      const updated = getInvoices().filter(
+        x => x.number !== d.number
+      );
+
+      localStorage.setItem(
+        "adamInvoices",
+        JSON.stringify(updated)
+      );
+
+      renderHistory();
+
+    };
+
+    item.append(info, open, remove);
+
+    area.appendChild(item);
+
+  });
+
+}
+
+// FILE NAME
+
+function makeFileName() {
+
+  const number =
+    $("invoiceNumber").value.trim() || "invoice";
+
+  const safe = number.replace(
+    /[^a-zA-Z0-9_-]/g,
+    "_"
+  );
+
+  return "Invoice-" + safe + "-Adam-Sebag.pdf";
+
+}
+
+// VALIDATION
+
+function validateInvoice() {
+
+  preparePreview();
+
+  if (!$("invoiceNumber").value.trim()) {
+
+    throw new Error("נא להזין מספר חשבונית.");
+
+  }
+
+  if (!$("recipient").value.trim()) {
+
+    throw new Error("נא להזין שם לקוח.");
+
+  }
+
+  if (
+    !$("amount").value.trim() ||
+    Number($("amount").value) <= 0
+  ) {
+
+    throw new Error("נא להזין סכום תקין.");
+
+  }
+
+}
+
+// CREATE PDF IN SELECTED FORMAT
+
+async function createPDFBlob() {
+
+  validateInvoice();
+
+  if (typeof html2pdf !== "function") {
+
+    throw new Error(
+      "מנוע PDF לא נטען. בדוק את האינטרנט ורענן את הדף."
+    );
+
+  }
+
+  const format = $("pdfFormat").value;
+
+  const orientation = $("pdfOrientation").value;
+
+  const invoice = $("invoice");
+
+  const options = {
+
+    margin: [12, 12, 12, 12],
+
+    image: {
+      type: "jpeg",
+      quality: 0.98
+    },
+
+    html2canvas: {
+
+      scale: 2,
+
+      useCORS: true,
+
+      backgroundColor: "#ffffff",
+
+      logging: false,
+
+      scrollX: 0,
+
+      scrollY: 0
+
+    },
+
+    jsPDF: {
+
+      unit: "mm",
+
+      format: format,
+
+      orientation: orientation
+
+    },
+
+    pagebreak: {
+      mode: ["css", "legacy"]
+    }
+
+  };
+
+  const pdf = await html2pdf()
+
+    .set(options)
+
+    .from(invoice)
+
+    .toPdf()
+
+    .get("pdf");
+
+  if (
+    !pdf ||
+    pdf.internal.getNumberOfPages() < 1
+  ) {
+
+    throw new Error("קובץ PDF לא נוצר.");
+
+  }
+
+  const blob = pdf.output("blob");
+
+  if (!blob || blob.size < 1000) {
+
+    throw new Error("קובץ PDF לא תקין.");
+
+  }
+
+  return blob;
+
+}
+
+// DOWNLOAD
+
+function downloadBlob(blob, filename) {
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+
+  link.download = filename;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
+
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 60000);
+
+}
+
+function showStatus(message) {
+
+  const area = $("shareStatus");
+
+  area.style.display = "block";
+
+  area.textContent = message;
+
+}
+
+async function downloadPDF() {
+
+  try {
+
+    showStatus("מכין את החשבונית...");
+
+    const blob = await createPDFBlob();
+
+    downloadBlob(blob, makeFileName());
+
+    showStatus(
+      "החשבונית הורדה בהצלחה. בדוק את תיקיית Downloads."
+    );
+
+  } catch(error) {
+
+    showStatus("שגיאה: " + error.message);
+
+  }
+
+}
+
+// WHATSAPP SHARE
+
+async function shareWhatsApp() {
+
+  let whatsappTab = null;
+
+  try {
+
+    validateInvoice();
+
+    whatsappTab = window.open(
+      "https://web.whatsapp.com/",
+      "_blank"
+    );
+
+    showStatus("מכין את החשבונית לשיתוף...");
+
+    const blob = await createPDFBlob();
+
+    const file = new File(
+      [blob],
+      makeFileName(),
+      { type: "application/pdf" }
+    );
+
+    // Direct file sharing when supported
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({files: [file]})
+    ) {
+
+      try {
+
+        await navigator.share({
+
+          files: [file],
+
+          title: "חשבונית - אדם סבג",
+
+          text: "שלום, מצורפת החשבונית שלי."
+
+        });
+
+        showStatus(
+          "בחר WhatsApp בחלונית השיתוף ושלח את החשבונית."
+        );
+
+        return;
+
+      } catch(error) {
+
+        if (error.name === "AbortError") {
+
+          showStatus("השיתוף בוטל.");
+
+          return;
+
+        }
+
+      }
+
+    }
+
+    // Fallback for Safari and desktop
+
+    downloadBlob(blob, makeFileName());
+
+    showStatus(
+
+      "החשבונית הורדה למחשב!\n\n" +
+
+      "1. פתח WhatsApp Web.\n" +
+
+      "2. בחר את איש הקשר.\n" +
+
+      "3. לחץ על + או על המהדק.\n" +
+
+      "4. בחר מסמך / Document.\n" +
+
+      "5. בחר את קובץ ה-PDF בתיקיית Downloads.\n" +
+
+      "6. לחץ שלח."
+
+    );
+
+  } catch(error) {
+
+    if (whatsappTab && !whatsappTab.closed) {
+
+      whatsappTab.close();
+
+    }
+
+    showStatus("שגיאה בשיתוף: " + error.message);
+
+  }
+
+}
+
+// EMAIL
+
+async function shareEmail() {
+
+  const email = prompt(
+    "הזן כתובת דואר אלקטרוני:"
+  );
+
+  if (!email) return;
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+
+    alert("כתובת דואר אלקטרוני לא תקינה.");
+
+    return;
+
+  }
+
+  try {
+
+    const blob = await createPDFBlob();
+
+    downloadBlob(blob, makeFileName());
+
+    const subject = encodeURIComponent(
+      "חשבונית - אדם סבג"
+    );
+
+    const body = encodeURIComponent(
+      "שלום,\n\n" +
+      "מצורפת חשבונית PDF.\n\n" +
+      "תודה רבה,\n" +
+      "אדם סבג"
+    );
+
+    window.location.href =
+      "mailto:" + email +
+      "?subject=" + subject +
+      "&body=" + body;
+
+    showStatus(
+      "החשבונית הורדה. צרף אותה להודעת הדואר לפני השליחה."
+    );
+
+  } catch(error) {
+
+    alert("שגיאה: " + error.message);
+
+  }
+
+}
+
+// INITIALIZATION
+
+function initialize() {
+
+  $("invoiceDate").value =
+    new Date().toISOString().slice(0, 10);
+
+  const invoices = getInvoices();
+
+  const maxNumber = invoices.reduce(
+    (max, invoice) => {
+
+      const n = parseInt(invoice.number, 10);
+
+      return Number.isFinite(n)
+        ? Math.max(max, n)
+        : max;
+
+    },
+    0
+  );
+
+  $("invoiceNumber").value =
+    String(maxNumber + 1);
+
+  resizeCanvas();
+
+  renderHistory();
+
+}
+
+window.addEventListener("resize", () => {
+
+  if (!signatureData) {
+    resizeCanvas();
+  }
+
+});
+
+initialize();
+
+</script>
+
+</body>
+</html>
